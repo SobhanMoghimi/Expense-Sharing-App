@@ -1,0 +1,13 @@
+Django==4.0.4
+django_extensions==3.1.5
+djangorestframework==3.13.1
+psycopg2==2.9.3
+djangorestframework-simplejwt==5.2.0
+drf-spectacular==0.22.1
+
+django_user_agents==0.4.0
+django-cors-headers==4.3.1
+
+pydantic==2.5.2
+redis==4.5.4
+python-dotenv==1.0.0
