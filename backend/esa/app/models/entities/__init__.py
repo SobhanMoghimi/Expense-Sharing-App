@@ -1,0 +1,2 @@
+from .address_entities import WalletAddressesEntity
+from .address_entities import UserEntity

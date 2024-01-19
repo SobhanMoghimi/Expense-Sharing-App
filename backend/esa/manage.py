@@ -6,7 +6,7 @@ import sys
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'esa.project.settings')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
@@ -19,4 +19,7 @@ def main():
 
 
 if __name__ == '__main__':
+    from esa.configurations import ESAConfig, Configuration
+
+    Configuration.configure(ESAConfig, alternative_env_search_dir=__file__)
     main()
