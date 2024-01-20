@@ -20,15 +20,11 @@ class RedisBaseConfig:
     REDIS_PASSWORD: str = None
     REDIS_DECODE_RESPONSES: bool = True
 
-class ESAConfig(DatabaseBaseConfig, RedisBaseConfig):
-    """ Configuration Files for our project. """
-    IS_DEBUG: bool = True
-    APP_SECRET_KEY: str = None
-    ALLOWED_HOSTS: list = []
-
+class BaseConfig(DatabaseBaseConfig, RedisBaseConfig):
+    ...
 
 class Configuration:
-    _config_class = ESAConfig
+    _config_class = BaseConfig
 
     @classmethod
     def get_all_annotated_fields(cls, clazz):
@@ -126,3 +122,11 @@ class Configuration:
         if class_value:
             return env_value if isinstance(class_value, str) else eval(env_value)
         return env_value
+
+
+class ESAConfig(BaseConfig):
+    """ Configuration Files for our project. """
+    IS_DEBUG: bool = True
+    APP_SECRET_KEY: str = None
+    ALLOWED_HOSTS: list = []
+

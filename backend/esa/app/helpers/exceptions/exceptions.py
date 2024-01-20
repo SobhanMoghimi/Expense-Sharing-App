@@ -39,7 +39,7 @@ class LowAddressBalanceException(CommonsBaseException):
         super().__init__("Address balance is lower than expected amount for deposits")
 
 
-class CustomerNotFoundException(NotFound):
+class UserNotFoundException(NotFound):
     def __init__(self):
         super().__init__()
         self.detail = ('Invalid user or password.')

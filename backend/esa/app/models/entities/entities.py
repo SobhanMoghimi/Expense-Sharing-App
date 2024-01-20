@@ -45,6 +45,9 @@ class UserManager(BaseUserManager):
 
 class UserEntity(AbstractBaseUser, PermissionsMixin, DeletableEntity):
     email = models.EmailField(max_length=80, unique=True, null=True)
+    first_name = models.CharField(max_length=128)
+    last_name = models.CharField(max_length=128)
+
     is_staff = models.BooleanField(default=False)
 
     objects = UserManager()
@@ -58,3 +61,15 @@ class UserEntity(AbstractBaseUser, PermissionsMixin, DeletableEntity):
 
     def __str__(self):
         return self.email
+
+
+class GroupEntity(CommonEntity):
+    members = models.ManyToManyField(UserEntity)
+
+
+
+class ExpenseEntity(CommonEntity):
+    amount = models.IntegerField()
+    created_by = models.ForeignKey(UserEntity, on_delete=models.DO_NOTHING)
+    description = models.CharField(max_length=1024)
+    group = models.ForeignKey(GroupEntity, on_delete=models.DO_NOTHING, null=True, db_constraint=False)
