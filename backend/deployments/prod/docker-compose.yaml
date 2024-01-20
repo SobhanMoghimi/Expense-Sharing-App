@@ -1,0 +1,35 @@
+version: '3'
+services:
+
+  expense-sharing-app:
+    container_name: expense-sharing-app
+    image: ${IMAGE_NAME}:${IMAGE_VERSION}
+    env_file:
+      - 'variables.env'
+    command: python3 -m esa.manage runserver 0.0.0.0:8100
+    networks:
+      - expense-sharing-app-network
+      - redis-net
+      - postgres-net
+    volumes:
+      - static:/static/
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+    restart: always
+    ports:
+      - "8100:8100"
+
+volumes:
+  static:
+
+networks:
+  expense-sharing-app-network:
+    external: true
+  redis-net:
+    external: true
+    name: redis-net
+  postgres-net:
+    external: true
