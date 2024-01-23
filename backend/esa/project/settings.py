@@ -215,7 +215,7 @@ REST_FRAMEWORK = {
 
 SPECTACULAR_SETTINGS = {
 
-    'TITLE': 'Market-Making-Bot',
+    'TITLE': 'Expense-Sharing-App',
     "SWAGGER_UI_SETTINGS": {
         "deepLinking": True,
         "persistAuthorization": True,
@@ -223,11 +223,3 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'Documentation of Market-Making-Bot',
     'VERSION': '2.0.0',
 }
-
-# REDIS CACHE
-CELERY_BROKER_URL = MMBConfig.CELERY_BROKER_URL
-CELERY_RESULT_BACKEND = MMBConfig.CELERY_RESULT_BACKEND
-CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
-CELERY_RESULT_EXTENDED = True
-CELERY_TIMEZONE = TIME_ZONE
-CELERY_WORKER_REDIRECT_STDOUTS_LEVEL = "DEBUG"
