@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
 
-from esa.app.api.controller.customer_controller import AuthController
+from esa.app.api.controller.user_controller import AuthController
 
 urlpatterns = [
     path('login/', AuthController.as_view({'post': 'login'}), name='login'),

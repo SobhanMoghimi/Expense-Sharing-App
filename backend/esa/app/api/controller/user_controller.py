@@ -5,7 +5,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework_simplejwt.exceptions import TokenError
 
-from esa.app.api.serializer.customer.customer_serializers import CustomerLoginRequestSerializer, TokenSerializer, \
+from esa.app.api.serializer.user.user_serializers import CustomerLoginRequestSerializer, TokenSerializer, \
     RefreshTokenSerializer
 from esa.app.api.serializer.system.system_serializer import ResponseSerializer
 from esa.app.helpers.common_response import ErrorResponse, SuccessfulResponse
