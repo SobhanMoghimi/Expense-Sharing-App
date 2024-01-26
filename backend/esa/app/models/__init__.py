@@ -1,1 +1,1 @@
-from .entities import UserEntity, WalletAddressesEntity
+from .entities import UserEntity

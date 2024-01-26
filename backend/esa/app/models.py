@@ -1,3 +1,3 @@
 from django.db import models
 
-# Create your models here.
+from esa.app.models.entities.entities import UserEntity
