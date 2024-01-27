@@ -64,7 +64,10 @@ class UserEntity(AbstractBaseUser, PermissionsMixin, DeletableEntity):
 
 
 class GroupEntity(CommonEntity):
+    name = models.CharField(max_length=128)
+    description = models.CharField(max_length=512)
     members = models.ManyToManyField(UserEntity)
+    created_by = models.ForeignKey(UserEntity, on_delete=models.DO_NOTHING)
 
 
 

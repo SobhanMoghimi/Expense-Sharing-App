@@ -9,6 +9,7 @@ from esa.app.helpers.exceptions.exceptions import UserNotFoundException, Already
 from esa.app.helpers.metaclasses.singleton import Singleton
 from esa.app.models import UserEntity
 from esa.app.models.dtos.dtos import LoginDTO, LogoutDto, TokenDTO
+from esa.app.models.entities.entities import GroupEntity
 
 
 class ExpenseSharingAPPLogic(metaclass=Singleton):
@@ -47,6 +48,9 @@ class ExpenseSharingAPPLogic(metaclass=Singleton):
     def logout(self, logout_dto: LogoutDto) -> None:
         token = RefreshToken(logout_dto.refresh_token)
         token.blacklist()
+
+    def create_group(self, user: UserEntity, group_name: str, group_description: str) -> GroupEntity:
+        return self.db_adapter.create_group(user, group_name, group_description)
 
     def test(self):
         print("WAH")

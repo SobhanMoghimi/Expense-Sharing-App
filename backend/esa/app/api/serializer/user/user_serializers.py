@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from esa.app.helpers.utils.validation_utils import ValidationUtils
+from esa.app.models.entities.entities import GroupEntity
 
 
 class CustomerLoginRequestSerializer(serializers.Serializer):
@@ -23,3 +24,12 @@ class TokenSerializer(serializers.Serializer):
 
 class RefreshTokenSerializer(serializers.Serializer):
     refresh_token = serializers.CharField(required=True)
+
+class CreateGroupRequestSerializer(serializers.Serializer):
+    name = serializers.CharField(required=True)
+    description = serializers.CharField(required=False)
+
+class GroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GroupEntity
+        exclude = []
