@@ -1,13 +1,18 @@
 from typing import Any
 
 from rest_framework import status
-from rest_framework.exceptions import APIException
+from rest_framework.exceptions import APIException, ValidationError
 
 
 class NotFound(APIException):
     status_code = status.HTTP_404_NOT_FOUND
     default_detail = 'Not found.'
     default_code = 'not_found'
+
+class AlreadyExistsException(APIException):
+    status_code = status.HTTP_409_CONFLICT
+    def __init__(self, detail: str = None):
+        super().__init__(detail=detail)
 
 
 class CommonsBaseException(Exception):
@@ -29,17 +34,11 @@ class DefinitionException(CommonsBaseException):
         super().__init__(message)
 
 
-class ProviderConnectionException(CommonsBaseException):
-    def __init__(self):
-        super().__init__("provider rpc network exception")
-
-
-class LowAddressBalanceException(CommonsBaseException):
-    def __init__(self):
-        super().__init__("Address balance is lower than expected amount for deposits")
-
-
 class UserNotFoundException(NotFound):
     def __init__(self):
         super().__init__()
         self.detail = ('Invalid user or password.')
+
+class InvalidPhoneNumberException(ValidationError):
+    def __init__(self):
+        super().__init__(detail=['phone number is not valid'], code=status.HTTP_400_BAD_REQUEST)

@@ -47,7 +47,7 @@ class UserEntity(AbstractBaseUser, PermissionsMixin, DeletableEntity):
     email = models.EmailField(max_length=80, unique=True, null=True)
     first_name = models.CharField(max_length=128)
     last_name = models.CharField(max_length=128)
-
+    phone_number = models.CharField(max_length=32)
     is_staff = models.BooleanField(default=False)
 
     objects = UserManager()
