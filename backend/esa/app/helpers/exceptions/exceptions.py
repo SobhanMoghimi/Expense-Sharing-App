@@ -34,10 +34,15 @@ class DefinitionException(CommonsBaseException):
         super().__init__(message)
 
 
-class UserNotFoundException(NotFound):
+class UserWithPasswordNotFoundException(NotFound):
     def __init__(self):
         super().__init__()
         self.detail = ('Invalid user or password.')
+
+class UserNotFoundException(NotFound):
+    def __init__(self):
+        super().__init__()
+        self.detail = ('User not found!')
 
 class InvalidPhoneNumberException(ValidationError):
     def __init__(self):

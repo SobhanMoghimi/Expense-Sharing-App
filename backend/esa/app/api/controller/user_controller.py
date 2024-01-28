@@ -7,10 +7,11 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.exceptions import TokenError
 
 from esa.app.api.serializer.user.user_serializers import CustomerLoginRequestSerializer, TokenSerializer, \
-    RefreshTokenSerializer, UserRegisterRequestSerializer, CreateGroupRequestSerializer, GroupSerializer
+    RefreshTokenSerializer, UserRegisterRequestSerializer, CreateGroupRequestSerializer, GroupSerializer, \
+    GroupListSerializer, AddGroupMemberRequestSerializer
 from esa.app.api.serializer.system.system_serializer import ResponseSerializer
 from esa.app.helpers.common_response import ErrorResponse, SuccessfulResponse
-from esa.app.helpers.exceptions.exceptions import UserNotFoundException
+from esa.app.helpers.exceptions.exceptions import UserWithPasswordNotFoundException
 from esa.app.helpers.utils.esa_utils import ESAUtils
 from esa.app.logic.esa_logic import ExpenseSharingAPPLogic
 from esa.app.models.dtos.dtos import TokenDTO, LoginDTO, LogoutDto
@@ -71,7 +72,7 @@ class AuthController(viewsets.ViewSet):
         except ValueError as e:
             ESAUtils.handle_exception(e)
             return ErrorResponse(message=str(e), status_code=status.HTTP_400_BAD_REQUEST)
-        except UserNotFoundException as e:
+        except UserWithPasswordNotFoundException as e:
             return ErrorResponse(message=e, status_code=e.status_code)
         except Exception as e:
             ESAUtils.handle_exception(e)
@@ -115,6 +116,52 @@ class AuthController(viewsets.ViewSet):
                 return Response(response_serializer.data, status=status.HTTP_201_CREATED)
             else:
                 return ErrorResponse(status_code=status.HTTP_400_BAD_REQUEST)
+        except ValueError as e:
+            ESAUtils.handle_exception(e)
+            return ErrorResponse(message=str(e), status_code=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            ESAUtils.handle_exception(e)
+            return ErrorResponse(message=e, status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+    @extend_schema(
+        request=AddGroupMemberRequestSerializer,
+        tags=['Group'],
+        summary='Add Group Member',
+        description="",
+        responses=GroupSerializer,
+    )
+    def add_group_member(self, request: Request):
+        serializer = AddGroupMemberRequestSerializer(data=request.data)
+        try:
+            if serializer.is_valid():
+                user = request.user
+                group_id = serializer.validated_data.get("group_id")
+                user_id = serializer.validated_data.get("user_id")
+                response = self.logic.add_group_member(user, group_id, user_id)
+                response_serializer = GroupSerializer(response)
+                return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                return ErrorResponse(status_code=status.HTTP_400_BAD_REQUEST)
+        except ValueError as e:
+            ESAUtils.handle_exception(e)
+            return ErrorResponse(message=str(e), status_code=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            ESAUtils.handle_exception(e)
+            return ErrorResponse(message=e, status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+
+    @extend_schema(
+        tags=['Group'],
+        summary='Create Group',
+        description="",
+        responses=GroupListSerializer,
+    )
+    def get_user_groups(self, request: Request):
+        try:
+            user = request.user
+            groups = self.logic.get_user_groups(user)
+            response_serializer = GroupListSerializer({'groups': groups})
+            return Response(response_serializer.data, status=status.HTTP_201_CREATED)
         except ValueError as e:
             ESAUtils.handle_exception(e)
             return ErrorResponse(message=str(e), status_code=status.HTTP_400_BAD_REQUEST)

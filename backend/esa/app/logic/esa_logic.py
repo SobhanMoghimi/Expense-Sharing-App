@@ -1,11 +1,13 @@
 import time
 from _decimal import Decimal
+from uuid import UUID
 
 from django.db.models import QuerySet
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from esa.app.adapters.postgres_adapter import PostgresAdapter
-from esa.app.helpers.exceptions.exceptions import UserNotFoundException, AlreadyExistsException
+from esa.app.helpers.exceptions.exceptions import UserWithPasswordNotFoundException, AlreadyExistsException, \
+    UserNotFoundException
 from esa.app.helpers.metaclasses.singleton import Singleton
 from esa.app.models import UserEntity
 from esa.app.models.dtos.dtos import LoginDTO, LogoutDto, TokenDTO
@@ -32,13 +34,13 @@ class ExpenseSharingAPPLogic(metaclass=Singleton):
     def login(self, validated_dto: LoginDTO):
         customer = self.db_adapter.get_user_by_email(validated_dto.email)
         if not customer:
-            raise UserNotFoundException()
+            raise UserWithPasswordNotFoundException()
         if customer.check_password(validated_dto.password):
             access_token, refresh_token = self.create_tokens(user=customer)
 
             return {"access_token": str(access_token), "refresh_token": str(refresh_token)}
         else:
-            raise UserNotFoundException()
+            raise UserWithPasswordNotFoundException()
 
     def create_tokens(self, user: UserEntity):
         refresh_token = RefreshToken.for_user(user)
@@ -51,6 +53,15 @@ class ExpenseSharingAPPLogic(metaclass=Singleton):
 
     def create_group(self, user: UserEntity, group_name: str, group_description: str) -> GroupEntity:
         return self.db_adapter.create_group(user, group_name, group_description)
+
+    def get_user_groups(self, user: UserEntity) -> QuerySet[GroupEntity]:
+        self.db_adapter.get_user_groups(user)
+
+    def add_group_member(self, user: UserEntity, group_id: UUID, user_id: UUID) -> GroupEntity:
+        if not (added_user := self.db_adapter.get_user_by_id(user_id)):
+            raise UserNotFoundException()
+        # TODO: CHECK FRIENDSHIP
+        self.db_adapter.add_group_member()
 
     def test(self):
         print("WAH")

@@ -1,5 +1,6 @@
 import json
 from _decimal import Decimal
+from uuid import UUID
 
 from django.db.models import QuerySet
 
@@ -14,6 +15,10 @@ class PostgresAdapter:
     @staticmethod
     def get_user_by_email(email: str) -> UserEntity:
         return UserEntity.objects.filter(email=email).first()
+
+    @staticmethod
+    def get_user_by_id(user_id: UUID) -> UserEntity:
+        return UserEntity.objects.filter(id=user_id).first()
 
     @staticmethod
     def get_user_by_phone_number(phone_number: str) -> UserEntity:
@@ -36,3 +41,7 @@ class PostgresAdapter:
             created_by=user,
             members=[user]
         )
+
+    @staticmethod
+    def get_user_groups(user: UserEntity) -> QuerySet[GroupEntity]:
+        return GroupEntity.objects.filter(members=user)

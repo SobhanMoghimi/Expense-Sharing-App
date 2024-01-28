@@ -33,3 +33,10 @@ class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = GroupEntity
         exclude = []
+
+class GroupListSerializer(serializers.Serializer):
+    groups = GroupSerializer(many=True)
+
+class AddGroupMemberRequestSerializer(serializers.Serializer):
+    group_id = serializers.UUIDField(required=True)
+    user_id = serializers.UUIDField(required=True)
