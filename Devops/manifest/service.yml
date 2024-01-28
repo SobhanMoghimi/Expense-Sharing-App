@@ -1,13 +1,12 @@
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
-  name: web-service
+  name: django-service
 spec:
-  clusterIP: None
   selector:
-    run: web-service
+    app: django-app
   ports:
-    - name: port1
-      protocol: TCP
-      port: 8000
+    - protocol: TCP
+      port: 80
       targetPort: 8000
+  type: NodePort
