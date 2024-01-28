@@ -49,7 +49,7 @@ class UserEntity(AbstractBaseUser, PermissionsMixin, DeletableEntity):
     last_name = models.CharField(max_length=128)
     phone_number = models.CharField(max_length=32)
 
-    friends = models.ManyToManyField("self", blank=True)
+    friends = models.ManyToManyField("self", blank=True, symmetrical=False)
     is_staff = models.BooleanField(default=False)
 
     objects = UserManager()
