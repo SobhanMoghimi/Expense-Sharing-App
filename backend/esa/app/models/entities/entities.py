@@ -48,6 +48,8 @@ class UserEntity(AbstractBaseUser, PermissionsMixin, DeletableEntity):
     first_name = models.CharField(max_length=128)
     last_name = models.CharField(max_length=128)
     phone_number = models.CharField(max_length=32)
+
+    friends = models.ManyToManyField("self", blank=True)
     is_staff = models.BooleanField(default=False)
 
     objects = UserManager()
@@ -67,9 +69,7 @@ class GroupEntity(CommonEntity):
     name = models.CharField(max_length=128)
     description = models.CharField(max_length=512)
     members = models.ManyToManyField(UserEntity)
-    created_by = models.ForeignKey(UserEntity, on_delete=models.DO_NOTHING)
-
-
+    created_by = models.ForeignKey(UserEntity, related_name="created_by", on_delete=models.DO_NOTHING)
 
 class ExpenseEntity(CommonEntity):
     amount = models.IntegerField()

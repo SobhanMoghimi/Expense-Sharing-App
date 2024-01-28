@@ -25,6 +25,9 @@ class TokenSerializer(serializers.Serializer):
 class RefreshTokenSerializer(serializers.Serializer):
     refresh_token = serializers.CharField(required=True)
 
+class AddFriendRequestSerializer(serializers.Serializer):
+    phone_number_or_email = serializers.CharField(required=True)
+
 class CreateGroupRequestSerializer(serializers.Serializer):
     name = serializers.CharField(required=True)
     description = serializers.CharField(required=False)
@@ -40,3 +43,4 @@ class GroupListSerializer(serializers.Serializer):
 class AddGroupMemberRequestSerializer(serializers.Serializer):
     group_id = serializers.UUIDField(required=True)
     user_id = serializers.UUIDField(required=True)
+

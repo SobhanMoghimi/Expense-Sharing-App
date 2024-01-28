@@ -8,7 +8,7 @@ from rest_framework_simplejwt.exceptions import TokenError
 
 from esa.app.api.serializer.user.user_serializers import CustomerLoginRequestSerializer, TokenSerializer, \
     RefreshTokenSerializer, UserRegisterRequestSerializer, CreateGroupRequestSerializer, GroupSerializer, \
-    GroupListSerializer, AddGroupMemberRequestSerializer
+    GroupListSerializer, AddGroupMemberRequestSerializer, AddFriendRequestSerializer
 from esa.app.api.serializer.system.system_serializer import ResponseSerializer
 from esa.app.helpers.common_response import ErrorResponse, SuccessfulResponse
 from esa.app.helpers.exceptions.exceptions import UserWithPasswordNotFoundException
@@ -17,8 +17,8 @@ from esa.app.logic.esa_logic import ExpenseSharingAPPLogic
 from esa.app.models.dtos.dtos import TokenDTO, LoginDTO, LogoutDto
 
 
-class AuthController(viewsets.ViewSet):
-    permission_classes_by_action = {'login': [AllowAny]}
+class UserController(viewsets.ViewSet):
+    permission_classes_by_action = {'login': [AllowAny], 'register': [AllowAny]}
 
     def get_permissions(self):
         try:
@@ -98,6 +98,45 @@ class AuthController(viewsets.ViewSet):
             return ErrorResponse(message=e, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @extend_schema(
+        request=AddFriendRequestSerializer,
+        tags=['User'],
+        summary='Add Friend',
+        description="",
+        responses={200: ResponseSerializer},
+    )
+    def add_friend(self, request: Request):
+        serializer = AddFriendRequestSerializer(data=request.data)
+        try:
+            if serializer.is_valid():
+                user = request.user
+                phone_or_email = serializer.validated_data.get("phone_number_or_email")
+                self.logic.add_friend(user, phone_or_email)
+                # response_serializer = GroupSerializer(response)
+                # return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+                return SuccessfulResponse()
+            else:
+                return ErrorResponse(status_code=status.HTTP_400_BAD_REQUEST)
+        except ValueError as e:
+            ESAUtils.handle_exception(e)
+            return ErrorResponse(message=str(e), status_code=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            ESAUtils.handle_exception(e)
+            return ErrorResponse(message=e, status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+class GroupController(viewsets.ViewSet):
+    permission_classes_by_action = {'login': [AllowAny], 'register': [AllowAny]}
+
+    def get_permissions(self):
+        try:
+            return [permission() for permission in self.permission_classes_by_action[self.action]]
+        except KeyError:
+            return [permission() for permission in self.permission_classes]
+
+    def __init__(self):
+        super().__init__()
+        self.logic = ExpenseSharingAPPLogic()
+
+    @extend_schema(
         request=CreateGroupRequestSerializer,
         tags=['Group'],
         summary='Create Group',
@@ -152,7 +191,7 @@ class AuthController(viewsets.ViewSet):
 
     @extend_schema(
         tags=['Group'],
-        summary='Create Group',
+        summary='Get user groups',
         description="",
         responses=GroupListSerializer,
     )

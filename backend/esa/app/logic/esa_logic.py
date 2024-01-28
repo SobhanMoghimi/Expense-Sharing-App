@@ -29,7 +29,7 @@ class ExpenseSharingAPPLogic(metaclass=Singleton):
         user = self.db_adapter.add_user(first_name, last_name , email, phone_number, password)
         access_token, refresh_token = self.create_tokens(user=user)
 
-        return TokenDTO(access_token=access_token, refresh_token=refresh_token)
+        return TokenDTO(access_token=str(access_token), refresh_token=str(access_token))
 
     def login(self, validated_dto: LoginDTO):
         customer = self.db_adapter.get_user_by_email(validated_dto.email)
@@ -55,13 +55,21 @@ class ExpenseSharingAPPLogic(metaclass=Singleton):
         return self.db_adapter.create_group(user, group_name, group_description)
 
     def get_user_groups(self, user: UserEntity) -> QuerySet[GroupEntity]:
-        self.db_adapter.get_user_groups(user)
+        return self.db_adapter.get_user_groups(user)
 
     def add_group_member(self, user: UserEntity, group_id: UUID, user_id: UUID) -> GroupEntity:
         if not (added_user := self.db_adapter.get_user_by_id(user_id)):
             raise UserNotFoundException()
         # TODO: CHECK FRIENDSHIP
         self.db_adapter.add_group_member()
+
+    def add_friend(self, user: UserEntity, phone_or_email: str) -> None:
+        if friend_user := self.db_adapter.get_user_by_email(phone_or_email):
+            self.db_adapter.add_friend(user, friend_user)
+        elif friend_user:= self.db_adapter.get_user_by_phone_number(phone_or_email):
+            self.db_adapter.add_friend(user, friend_user)
+        else:
+            raise UserNotFoundException()
 
     def test(self):
         print("WAH")
