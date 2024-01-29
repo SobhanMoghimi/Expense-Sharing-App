@@ -1,19 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: django-app
+  name: expense
+  labels:
+    app: django
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
-      app: django-app
+      app: django
   template:
     metadata:
       labels:
-        app: django-app
+        app: django
     spec:
       containers:
-      - name: django-container
-        image: your_django_image_name
-        ports:
-        - containerPort: 8000
+        - image: dockerhub_username/app_repo_name:latest
+          name: expense
+          ports:
+            - containerPort: 8000
+              name: gunicorn
