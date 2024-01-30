@@ -29,7 +29,7 @@ class RefreshTokenSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserEntity
-        include = ["email", "first_name", "last_name", "id"]
+        fields = ["email", "first_name", "last_name", "id"]
 
 class AddFriendRequestSerializer(serializers.Serializer):
     phone_number_or_email = serializers.CharField(required=True)
@@ -39,16 +39,19 @@ class FriendSerializer(serializers.Serializer):
     money_owed = serializers.IntegerField()
 
 class FriendsSerializer(serializers.Serializer):
-    friends_with_owed = FriendSerializer(many=True)
+    friends = FriendSerializer(many=True)
 
 class CreateGroupRequestSerializer(serializers.Serializer):
     name = serializers.CharField(required=True)
     description = serializers.CharField(required=False)
 
 class GroupSerializer(serializers.ModelSerializer):
+    members = UserSerializer(many=True)
+    created_by = UserSerializer()
+
     class Meta:
         model = GroupEntity
-        exclude = []
+        exclude = ["created_at", "is_deleted"]
 
 class GroupListSerializer(serializers.Serializer):
     groups = GroupSerializer(many=True)

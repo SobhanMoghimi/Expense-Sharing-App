@@ -57,11 +57,11 @@ class PostgresAdapter:
         if FriendshipEntity.objects.filter(user=user, friend_user=friend_user):
             AlreadyExistsException("User already exists in your friend list.")
         if user.id == friend_user.id:
-            Exception("Can't add yourself to your friends.")
+            raise Exception("Can't add yourself to your friends.")
         FriendshipEntity.objects.create(user=user, friend_user=friend_user)
 
 
     @staticmethod
     def get_friends(user: UserEntity) -> list[(UserEntity, int)]:
         friendships = FriendshipEntity.objects.filter(user=user)
-        return [(friendship.friend_user, friendship.money_owed) for friendship in friendships]
+        return [{'friend': friendship.friend_user, 'money_owed': friendship.money_owed} for friendship in friendships]

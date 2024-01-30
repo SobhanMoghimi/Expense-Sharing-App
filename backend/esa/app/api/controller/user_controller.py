@@ -8,7 +8,7 @@ from rest_framework_simplejwt.exceptions import TokenError
 
 from esa.app.api.serializer.user.user_serializers import CustomerLoginRequestSerializer, TokenSerializer, \
     RefreshTokenSerializer, UserRegisterRequestSerializer, CreateGroupRequestSerializer, GroupSerializer, \
-    GroupListSerializer, AddGroupMemberRequestSerializer, AddFriendRequestSerializer
+    GroupListSerializer, AddGroupMemberRequestSerializer, AddFriendRequestSerializer, FriendsSerializer
 from esa.app.api.serializer.system.system_serializer import ResponseSerializer
 from esa.app.helpers.common_response import ErrorResponse, SuccessfulResponse
 from esa.app.helpers.exceptions.exceptions import UserWithPasswordNotFoundException
@@ -100,7 +100,7 @@ class UserController(viewsets.ViewSet):
     @extend_schema(
         request=AddFriendRequestSerializer,
         tags=['User'],
-        summary='Add FriendshipEntity',
+        summary='Add Friend',
         description="",
         responses={200: ResponseSerializer},
     )
@@ -128,15 +128,14 @@ class UserController(viewsets.ViewSet):
         tags=['User'],
         summary='Get Friends',
         description="",
-        responses={200: ResponseSerializer},
+        responses={200: FriendsSerializer},
     )
     def get_friends(self, request: Request):
         try:
             user = request.user
             response = self.logic.get_friends(user)
-            response_serializer = GroupSerializer(response)
+            response_serializer = FriendsSerializer({'friends':response})
             return Response(response_serializer.data, status=status.HTTP_200_OK)
-            # return SuccessfulResponse()
         except ValueError as e:
             ESAUtils.handle_exception(e)
             return ErrorResponse(message=str(e), status_code=status.HTTP_400_BAD_REQUEST)
