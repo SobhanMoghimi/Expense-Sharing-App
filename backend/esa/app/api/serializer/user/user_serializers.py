@@ -43,7 +43,7 @@ class FriendsSerializer(serializers.Serializer):
     friends = FriendSerializer(many=True)
 
 class GetFriendExpensesRequestSerializer(serializers.Serializer):
-    friend_id = serializers.UUIDField()
+    friend_id = serializers.UUIDField(required=False)
 
 class CreateGroupRequestSerializer(serializers.Serializer):
     name = serializers.CharField(required=True)

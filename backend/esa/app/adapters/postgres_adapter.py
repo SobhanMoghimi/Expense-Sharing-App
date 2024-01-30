@@ -131,10 +131,10 @@ class PostgresAdapter:
 
     @staticmethod
     def update_owned_money(payer_split: SplitEntity, friend_split: SplitEntity) -> None:
-        payer_friendship = FriendshipEntity.objects.get(user=payer_split.user, other_user=friend_split.user)
-        payer_friendship.money_owned = payer_friendship.money_owned - friend_split.share
+        payer_friendship = FriendshipEntity.objects.get(user=payer_split.user, friend_user=friend_split.user)
+        payer_friendship.money_owed = payer_friendship.money_owed - friend_split.share
         payer_friendship.save()
 
-        friend_friendship = FriendshipEntity.objects.get(user=friend_split.user, other_user=payer_split.user)
-        friend_friendship.money_owned = friend_friendship.money_owned + friend_split.share
+        friend_friendship = FriendshipEntity.objects.get(user=friend_split.user, friend_user=payer_split.user)
+        friend_friendship.money_owed = friend_friendship.money_owed + friend_split.share
         friend_friendship.save()

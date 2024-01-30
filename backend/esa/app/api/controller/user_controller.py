@@ -151,7 +151,7 @@ class FriendsController(viewsets.ViewSet):
     @extend_schema(
         request=AddFriendExpenseRequestSerializer,
         tags=['Friends'],
-        summary='Add Friend',
+        summary='Add Friend Expense',
         description="",
         responses={200: ResponseSerializer},
     )
@@ -160,7 +160,7 @@ class FriendsController(viewsets.ViewSet):
         try:
             if serializer.is_valid():
                 user = request.user
-                expense_dto = FriendExpenseDTO.model_validate(serializer)
+                expense_dto = FriendExpenseDTO.model_validate(serializer.data)
                 expense_dto.created_by = user
                 self.logic.add_friend_expense(
                     expense_dto
@@ -187,10 +187,10 @@ class FriendsController(viewsets.ViewSet):
         try:
             if serializer.is_valid():
                 user = request.user
-                expense_dto = FriendExpenseDTO.model_validate(serializer)
-                expense_dto.created_by = user
-                self.logic.add_friend_expense(
-                    expense_dto
+                friend_id = serializer.validated_data.get("friend_id")
+                output = self.logic.get_friends_expenses(
+                    user,
+                    friend_id
                 )
                 return SuccessfulResponse()
             else:

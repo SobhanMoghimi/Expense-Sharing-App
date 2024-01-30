@@ -101,8 +101,13 @@ class ExpenseSharingAPPLogic(metaclass=Singleton):
     def add_friend_before_split(self, expense_dto: FriendExpenseDTO) -> None:
         payer_user = self.db_adapter.get_user_by_id(expense_dto.paid_by)
         other_user = self.db_adapter.get_user_by_id(expense_dto.other_user)
+        expense_dto.paid_by = payer_user
+        expense_dto.other_user = other_user
         self.db_adapter.get_or_create_friend(payer_user, other_user)
         self.db_adapter.get_or_create_friend(other_user, payer_user)
+
+    def get_friends_expenses(self, user: UserEntity, friend_id: UUID):
+        return self.db_adapter.get_friends_expenses()
 
     def test(self):
         print("WAH")
