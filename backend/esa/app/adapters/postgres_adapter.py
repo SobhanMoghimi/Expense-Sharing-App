@@ -1,4 +1,5 @@
 import json
+import math
 from _decimal import Decimal
 from uuid import UUID
 
@@ -7,7 +8,8 @@ from django.db.models import QuerySet
 from esa.app.helpers.exceptions.exceptions import AlreadyExistsException
 from esa.app.models import UserEntity
 from esa.app.models.dtos.dtos import FriendExpenseDTO
-from esa.app.models.entities.entities import GroupEntity, FriendshipEntity, ExpenseEntity
+from esa.app.models.entities.entities import GroupEntity, FriendshipEntity, ExpenseEntity, SplitEntity
+from esa.app.models.enums import SplitType
 
 
 class PostgresAdapter:
@@ -54,12 +56,12 @@ class PostgresAdapter:
     def get_user_groups(user: UserEntity) -> QuerySet[GroupEntity]:
         return GroupEntity.objects.filter(members=user)
 
-    def add_friend(self, user: UserEntity, friend_user: UserEntity) -> None:
-        if FriendshipEntity.objects.filter(user=user, friend_user=friend_user):
-            AlreadyExistsException("User already exists in your friend list.")
+    def get_or_create_friend(self, user: UserEntity, friend_user: UserEntity) -> FriendshipEntity:
+        # if FriendshipEntity.objects.filter(user=user, friend_user=friend_user):
+        #     AlreadyExistsException("User already exists in your friend list.")
         if user.id == friend_user.id:
             raise Exception("Can't add yourself to your friends.")
-        FriendshipEntity.objects.create(user=user, friend_user=friend_user)
+        return FriendshipEntity.objects.get_or_create(user=user, friend_user=friend_user)
 
 
     @staticmethod
@@ -67,20 +69,32 @@ class PostgresAdapter:
         friendships = FriendshipEntity.objects.filter(user=user)
         return [{'friend': friendship.friend_user, 'money_owed': friendship.money_owed} for friendship in friendships]
 
-    @staticmethod
-    def add_friend_equal_expense(expense_dto: FriendExpenseDTO) -> None:
-        pass
+    def add_friend_equal_expense(self, expense_dto: FriendExpenseDTO) -> None:
+        expense = self.add_friend_expense(expense_dto)
+        SplitEntity.objects.create(
+            user=expense_dto.paid_by,
+            expense=expense,
+            share=math.ceil(expense_dto.amount / 2),
+            split_type=SplitType
+        )
+    def add_friend_exact_expense(self, expense_dto: FriendExpenseDTO) -> None:
+        expense = self.add_friend_expense(expense_dto)
+        SplitEntity.objects.create(
+            user=expense_dto.paid_by,
+            expense=expense,
+            share=math.ceil(expense_dto.amount / 2),
+            split_type=SplitType
+        )
+
+    def add_friend_percentage_expense(self, expense_dto: FriendExpenseDTO) -> None:
+        expense = self.add_friend_expense(expense_dto)
 
     @staticmethod
-    def add_friend_exact_expense(expense_dto: FriendExpenseDTO) -> None:
-        pass
-
-    @staticmethod
-    def add_friend_percentage_expense(expense_dto: FriendExpenseDTO) -> None:
-        expense = ExpenseEntity.objects.create(
+    def add_friend_expense(expense_dto: FriendExpenseDTO) -> ExpenseEntity:
+        return ExpenseEntity.objects.create(
             title=expense_dto.title,
             description=expense_dto.description,
             amount=expense_dto.amount,
             created_by=expense_dto.created_by,
-            paid_by=expense_dto.paid_by
+            paid_by=expense_dto.paid_by,
         )

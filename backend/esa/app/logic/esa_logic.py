@@ -67,9 +67,9 @@ class ExpenseSharingAPPLogic(metaclass=Singleton):
 
     def add_friend(self, user: UserEntity, phone_or_email: str) -> None:
         if friend_user := self.db_adapter.get_user_by_email(phone_or_email):
-            self.db_adapter.add_friend(user, friend_user)
+            self.db_adapter.get_or_create_friend(user, friend_user)
         elif friend_user:= self.db_adapter.get_user_by_phone_number(phone_or_email):
-            self.db_adapter.add_friend(user, friend_user)
+            self.db_adapter.get_or_create_friend(user, friend_user)
         else:
             raise UserNotFoundException()
 
@@ -85,13 +85,24 @@ class ExpenseSharingAPPLogic(metaclass=Singleton):
         if expense_dto.split_type == SplitType.EXACT:
             if expense_dto.amount != (expense_dto.payer_amount + expense_dto.other_amount):
                 raise ValidationError("Input amounts for expenses don't match.")
+            self.add_friend_before_split(expense_dto)
             self.db_adapter.add_friend_exact_expense(expense_dto)
+
         elif expense_dto.split_type == SplitType.PERCENTAGE:
             if (expense_dto.payer_percentage + expense_dto.other_percentage) != 100:
                 raise ValidationError("Input percentage for expenses don't match.")
+            self.add_friend_before_split(expense_dto)
             self.db_adapter.add_friend_percentage_expense(expense_dto)
+
         elif expense_dto.split_type == SplitType.EQUAL:
+            self.add_friend_before_split(expense_dto)
             self.db_adapter.add_friend_equal_expense(expense_dto)
+
+    def add_friend_before_split(self, expense_dto: FriendExpenseDTO) -> None:
+        payer_user = self.db_adapter.get_user_by_id(expense_dto.paid_by)
+        other_user = self.db_adapter.get_user_by_id(expense_dto.other_user)
+        self.db_adapter.get_or_create_friend(payer_user, other_user)
+        self.db_adapter.get_or_create_friend(other_user, payer_user)
 
     def test(self):
         print("WAH")

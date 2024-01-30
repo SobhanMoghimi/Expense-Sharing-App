@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Expense-Sharing-App
   version: 2.0.0
-  description: Documentation of Market-Making-Bot
+  description: Documentation of Expense-Sharing-App
 paths:
   /api/group/:
     get:

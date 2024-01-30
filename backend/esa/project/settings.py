@@ -220,6 +220,6 @@ SPECTACULAR_SETTINGS = {
         "deepLinking": True,
         "persistAuthorization": True,
         "displayOperationId": True},
-    'DESCRIPTION': 'Documentation of Market-Making-Bot',
+    'DESCRIPTION': 'Documentation of Expense-Sharing-App',
     'VERSION': '2.0.0',
 }
