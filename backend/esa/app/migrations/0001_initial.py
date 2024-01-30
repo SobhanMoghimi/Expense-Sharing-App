@@ -66,20 +66,4 @@ class Migration(migrations.Migration):
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='user', to=settings.AUTH_USER_MODEL)),
             ],
         ),
-        migrations.CreateModel(
-            name='ExpenseEntity',
-            fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('is_deleted', models.BooleanField(default=False)),
-                ('amount', models.IntegerField()),
-                ('description', models.CharField(max_length=1024)),
-                ('created_by', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to=settings.AUTH_USER_MODEL)),
-                ('group', models.ForeignKey(db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='app.groupentity')),
-            ],
-            options={
-                'abstract': False,
-            },
-            bases=(esa.app.helpers.entities.base_entities.TimestampEntity, models.Model),
-        ),
     ]

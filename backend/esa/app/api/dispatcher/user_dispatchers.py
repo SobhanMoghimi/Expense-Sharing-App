@@ -1,5 +1,5 @@
-from django.urls import path, include
-from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
+from django.urls import path
+from rest_framework_simplejwt.views import TokenRefreshView
 
 from esa.app.api.controller.user_controller import UserController
 

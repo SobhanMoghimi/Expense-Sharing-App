@@ -7,7 +7,7 @@ from django.core.validators import MinValueValidator
 from django.db import models
 
 from esa.app.helpers.entities.base_entities import CommonEntity
-
+from esa.app.models.enums import SplitType
 
 
 class UserManager(BaseUserManager):
@@ -80,7 +80,18 @@ class GroupEntity(CommonEntity):
     created_by = models.ForeignKey(UserEntity, related_name="created_by", on_delete=models.DO_NOTHING)
 
 class ExpenseEntity(CommonEntity):
+    title = models.CharField(max_length=256)
     amount = models.IntegerField()
-    created_by = models.ForeignKey(UserEntity, on_delete=models.DO_NOTHING)
+    created_by = models.ForeignKey(UserEntity, on_delete=models.DO_NOTHING, related_name="expense_created_by")
     description = models.CharField(max_length=1024)
     group = models.ForeignKey(GroupEntity, on_delete=models.DO_NOTHING, null=True, db_constraint=False)
+    paid_by = models.ForeignKey(UserEntity, on_delete=models.CASCADE, related_name="paid_by")
+    # splits = models.ManyToOneRel()
+
+class SplitEntity(CommonEntity):
+    user = models.ForeignKey(UserEntity, on_delete=models.CASCADE)
+    percentage = models.FloatField(null=True)
+    expense = models.ForeignKey(ExpenseEntity, on_delete=models.CASCADE)
+    share = models.IntegerField()
+    split_type = models.CharField(max_length=32, choices=SplitType.choices)
+
