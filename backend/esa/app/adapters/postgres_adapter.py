@@ -75,19 +75,48 @@ class PostgresAdapter:
             user=expense_dto.paid_by,
             expense=expense,
             share=math.ceil(expense_dto.amount / 2),
-            split_type=SplitType
+            split_type=expense_dto.split_type
         )
+        SplitEntity.objects.create(
+            user=expense_dto.other_user,
+            expense=expense,
+            share=math.floor(expense_dto.amount / 2),
+            split_type=expense_dto.split_type
+        )
+
     def add_friend_exact_expense(self, expense_dto: FriendExpenseDTO) -> None:
         expense = self.add_friend_expense(expense_dto)
         SplitEntity.objects.create(
             user=expense_dto.paid_by,
             expense=expense,
-            share=math.ceil(expense_dto.amount / 2),
-            split_type=SplitType
+            share=expense_dto.payer_amount,
+            split_type=expense_dto.split_type
         )
+        SplitEntity.objects.create(
+            user=expense_dto.other_user,
+            expense=expense,
+            share=expense_dto.other_amount,
+            split_type=expense_dto.split_type
+        )
+
+
+
 
     def add_friend_percentage_expense(self, expense_dto: FriendExpenseDTO) -> None:
         expense = self.add_friend_expense(expense_dto)
+        SplitEntity.objects.create(
+            user=expense_dto.paid_by,
+            expense=expense,
+            share=expense_dto.amount * expense_dto.payer_percentage,
+            percentage=expense_dto.payer_percentage,
+            split_type=expense_dto.split_type
+        )
+        SplitEntity.objects.create(
+            user=expense_dto.other_user,
+            expense=expense,
+            share=expense_dto.other_amount,
+            split_type=expense_dto.split_type
+        )
 
     @staticmethod
     def add_friend_expense(expense_dto: FriendExpenseDTO) -> ExpenseEntity:
