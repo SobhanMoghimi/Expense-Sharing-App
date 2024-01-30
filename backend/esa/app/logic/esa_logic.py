@@ -10,7 +10,7 @@ from esa.app.helpers.exceptions.exceptions import UserWithPasswordNotFoundExcept
     UserNotFoundException
 from esa.app.helpers.metaclasses.singleton import Singleton
 from esa.app.models import UserEntity
-from esa.app.models.dtos.dtos import LoginDTO, LogoutDto, TokenDTO
+from esa.app.models.dtos.dtos import LoginDTO, LogoutDto, TokenDTO, FriendExpenseDTO
 from esa.app.models.entities.entities import GroupEntity
 
 
@@ -73,6 +73,10 @@ class ExpenseSharingAPPLogic(metaclass=Singleton):
 
     def get_friends(self, user: UserEntity) -> list[(UserEntity, int)]:
         return self.db_adapter.get_friends(user)
+
+    def add_friend_expense(self, expense_dto: FriendExpenseDTO) -> None:
+        pass
+
 
     def test(self):
         print("WAH")

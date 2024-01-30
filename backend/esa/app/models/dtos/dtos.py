@@ -1,14 +1,23 @@
 from datetime import datetime
 
 from _decimal import Decimal
+from uuid import UUID
+
 from pydantic import BaseModel, ConfigDict, StrictInt, Field, StrictStr, condecimal, field_validator, PastDatetime, \
     FutureDatetime
 
-from esa.app.models.enums import RequestMethod
+from esa.app.models import UserEntity
+from esa.app.models.enums import RequestMethod, SplitType
 
 
 class BaseDTO(BaseModel):
-    model_config = ConfigDict(extra="ignore", validate_default=True, from_attributes=True, validate_assignment=True)
+    model_config = ConfigDict(
+        extra="ignore",
+        validate_default=True,
+        from_attributes=True,
+        validate_assignment=True,
+        arbitrary_types_allowed=True
+    )
     created_at: datetime | None = None
 
 
@@ -44,3 +53,16 @@ class RequestDTO(BaseDTO):
     headers: dict | None = None
     params: dict | None = None
     data: dict | None = None
+
+class FriendExpenseDTO(BaseDTO):
+    created_by: UUID | UserEntity | None = None
+    title: StrictStr
+    description: StrictStr | None = None
+    amount: StrictInt
+    paid_by: UUID | UserEntity
+    other_user: UUID | UserEntity
+    expense_type: SplitType
+    payer_amount: StrictInt | None = None
+    other_amount: StrictInt | None = None
+    payer_percentage: StrictInt | None = None
+    other_percentage: StrictInt | None = None

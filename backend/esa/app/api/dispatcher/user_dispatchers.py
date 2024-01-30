@@ -8,5 +8,4 @@ urlpatterns = [
     path('logout/', UserController.as_view({'post': 'logout'}), name='logout'),
     path('register/', UserController.as_view({'post': 'register'})),
     path('auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('friends/', UserController.as_view({'post': 'add_friend', "get": 'get_friends'})),
 ]

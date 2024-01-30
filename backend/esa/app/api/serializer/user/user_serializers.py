@@ -3,6 +3,7 @@ from rest_framework import serializers
 from esa.app.helpers.utils.validation_utils import ValidationUtils
 from esa.app.models import UserEntity
 from esa.app.models.entities.entities import GroupEntity
+from esa.app.models.enums import SplitType
 
 
 class CustomerLoginRequestSerializer(serializers.Serializer):
@@ -60,3 +61,29 @@ class AddGroupMemberRequestSerializer(serializers.Serializer):
     group_id = serializers.UUIDField(required=True)
     user_id = serializers.UUIDField(required=True)
 
+
+class AddFriendExpenseRequestSerializer(serializers.Serializer):
+    title = serializers.CharField()
+    description = serializers.CharField(max_length=1024)
+    amount = serializers.IntegerField()
+    paid_by = serializers.UUIDField(required=True)
+    other_user = serializers.UUIDField(required=True)
+    expense_type = serializers.ChoiceField(choices=SplitType.choices)
+    payer_amount = serializers.IntegerField(required=False)
+    other_amount = serializers.IntegerField(required=False)
+    payer_percentage = serializers.IntegerField(required=False)
+    other_percentage = serializers.IntegerField(required=False)
+
+    def validate(self, data):
+        data_dict = dict(data)
+        data_keys = data.keys()
+        expense_type = data_dict.get('account_type')
+        if expense_type == 'EXACT' and (('payer_amount' not in data_keys) or ('other_amount' not in data_keys)):
+            raise serializers.ValidationError(
+                'payer_amount and other_amount are required when expense_type is exact.'
+            )
+        if expense_type == 'PERCENTAGE' and (('payer_percentage' not in data_keys) or ('other_percentage' not in data_keys)):
+            raise serializers.ValidationError(
+                'payer_percentage and other_percentage are required when expense_type is exact.'
+            )
+        return data
