@@ -68,12 +68,13 @@ CORS_ORIGIN_WHITELIST = [
      'http://localhost:3000'
 ]
 
-# CORS_ORIGIN_ALLOW_ALL = True
-# CORS_ALLOW_ALL_ORIGINS = True
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_ALL_ORIGINS = True
 
-# CORS_ALLOWED_ORIGIN_REGEXES = [
-#     r"^https://\w+\.example\.com$",
-# ]
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://\w+\.example\.com$",
+]
+
 CORS_ALLOW_METHODS = [
     "DELETE",
     "GET",
