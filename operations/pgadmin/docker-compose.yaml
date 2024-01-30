@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+      - PGADMIN_DEFAULT_PASSWORD="password"
+      - PGADMIN_CONFIG_SERVER_MODE=False
+      - PGADMIN_DEFAULT_EMAIL=sobhanmoghimi45@gmail.com
+    volumes:
+      - pgadmindata:/var/lib/pgadmin
+    ports:
+      - 5050:80
+    restart: unless-stopped
+    networks:
+      - postgres-net
+      - dockernet
+
+networks:
+  dockernet:
+    external: true
+  postgres-net:
+    external: true
+
+volumes:
+  pgadmindata:
+    driver: local
