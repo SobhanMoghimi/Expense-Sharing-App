@@ -71,52 +71,53 @@ class PostgresAdapter:
 
     def add_friend_equal_expense(self, expense_dto: FriendExpenseDTO) -> None:
         expense = self.add_friend_expense(expense_dto)
-        SplitEntity.objects.create(
+        payer_split =SplitEntity.objects.create(
             user=expense_dto.paid_by,
             expense=expense,
             share=math.ceil(expense_dto.amount / 2),
             split_type=expense_dto.split_type
         )
-        SplitEntity.objects.create(
+        other_split = SplitEntity.objects.create(
             user=expense_dto.other_user,
             expense=expense,
             share=math.floor(expense_dto.amount / 2),
             split_type=expense_dto.split_type
         )
+        self.update_owned_money(payer_split, other_split)
 
     def add_friend_exact_expense(self, expense_dto: FriendExpenseDTO) -> None:
         expense = self.add_friend_expense(expense_dto)
-        SplitEntity.objects.create(
+        payer_split = SplitEntity.objects.create(
             user=expense_dto.paid_by,
             expense=expense,
             share=expense_dto.payer_amount,
             split_type=expense_dto.split_type
         )
-        SplitEntity.objects.create(
+        other_split = SplitEntity.objects.create(
             user=expense_dto.other_user,
             expense=expense,
             share=expense_dto.other_amount,
             split_type=expense_dto.split_type
         )
-
-
-
+        self.update_owned_money(payer_split, other_split)
 
     def add_friend_percentage_expense(self, expense_dto: FriendExpenseDTO) -> None:
         expense = self.add_friend_expense(expense_dto)
-        SplitEntity.objects.create(
+        payer_split = SplitEntity.objects.create(
             user=expense_dto.paid_by,
             expense=expense,
             share=expense_dto.amount * expense_dto.payer_percentage,
             percentage=expense_dto.payer_percentage,
             split_type=expense_dto.split_type
         )
-        SplitEntity.objects.create(
+        other_split = SplitEntity.objects.create(
             user=expense_dto.other_user,
             expense=expense,
             share=expense_dto.other_amount,
             split_type=expense_dto.split_type
         )
+        self.update_owned_money(payer_split, other_split)
+
 
     @staticmethod
     def add_friend_expense(expense_dto: FriendExpenseDTO) -> ExpenseEntity:
@@ -127,3 +128,13 @@ class PostgresAdapter:
             created_by=expense_dto.created_by,
             paid_by=expense_dto.paid_by,
         )
+
+    @staticmethod
+    def update_owned_money(payer_split: SplitEntity, friend_split: SplitEntity) -> None:
+        payer_friendship = FriendshipEntity.objects.get(user=payer_split.user, other_user=friend_split.user)
+        payer_friendship.money_owned = payer_friendship.money_owned - friend_split.share
+        payer_friendship.save()
+
+        friend_friendship = FriendshipEntity.objects.get(user=friend_split.user, other_user=payer_split.user)
+        friend_friendship.money_owned = friend_friendship.money_owned + friend_split.share
+        friend_friendship.save()
