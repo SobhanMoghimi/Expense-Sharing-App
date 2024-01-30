@@ -6,7 +6,8 @@ from django.db.models import QuerySet
 
 from esa.app.helpers.exceptions.exceptions import AlreadyExistsException
 from esa.app.models import UserEntity
-from esa.app.models.entities.entities import GroupEntity, FriendshipEntity
+from esa.app.models.dtos.dtos import FriendExpenseDTO
+from esa.app.models.entities.entities import GroupEntity, FriendshipEntity, ExpenseEntity
 
 
 class PostgresAdapter:
@@ -65,3 +66,21 @@ class PostgresAdapter:
     def get_friends(user: UserEntity) -> list[(UserEntity, int)]:
         friendships = FriendshipEntity.objects.filter(user=user)
         return [{'friend': friendship.friend_user, 'money_owed': friendship.money_owed} for friendship in friendships]
+
+    @staticmethod
+    def add_friend_equal_expense(expense_dto: FriendExpenseDTO) -> None:
+        pass
+
+    @staticmethod
+    def add_friend_exact_expense(expense_dto: FriendExpenseDTO) -> None:
+        pass
+
+    @staticmethod
+    def add_friend_percentage_expense(expense_dto: FriendExpenseDTO) -> None:
+        expense = ExpenseEntity.objects.create(
+            title=expense_dto.title,
+            description=expense_dto.description,
+            amount=expense_dto.amount,
+            created_by=expense_dto.created_by,
+            paid_by=expense_dto.paid_by
+        )

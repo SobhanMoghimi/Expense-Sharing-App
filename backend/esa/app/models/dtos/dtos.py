@@ -61,7 +61,7 @@ class FriendExpenseDTO(BaseDTO):
     amount: StrictInt
     paid_by: UUID | UserEntity
     other_user: UUID | UserEntity
-    expense_type: SplitType
+    split_type: SplitType
     payer_amount: StrictInt | None = None
     other_amount: StrictInt | None = None
     payer_percentage: StrictInt | None = None

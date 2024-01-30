@@ -68,7 +68,7 @@ class AddFriendExpenseRequestSerializer(serializers.Serializer):
     amount = serializers.IntegerField()
     paid_by = serializers.UUIDField(required=True)
     other_user = serializers.UUIDField(required=True)
-    expense_type = serializers.ChoiceField(choices=SplitType.choices)
+    split_type = serializers.ChoiceField(choices=SplitType.choices)
     payer_amount = serializers.IntegerField(required=False)
     other_amount = serializers.IntegerField(required=False)
     payer_percentage = serializers.IntegerField(required=False)
@@ -77,13 +77,13 @@ class AddFriendExpenseRequestSerializer(serializers.Serializer):
     def validate(self, data):
         data_dict = dict(data)
         data_keys = data.keys()
-        expense_type = data_dict.get('account_type')
-        if expense_type == 'EXACT' and (('payer_amount' not in data_keys) or ('other_amount' not in data_keys)):
+        split_type = data_dict.get('account_type')
+        if split_type == 'EXACT' and (('payer_amount' not in data_keys) or ('other_amount' not in data_keys)):
             raise serializers.ValidationError(
-                'payer_amount and other_amount are required when expense_type is exact.'
+                'payer_amount and other_amount are required when split_type is exact.'
             )
-        if expense_type == 'PERCENTAGE' and (('payer_percentage' not in data_keys) or ('other_percentage' not in data_keys)):
+        if split_type == 'PERCENTAGE' and (('payer_percentage' not in data_keys) or ('other_percentage' not in data_keys)):
             raise serializers.ValidationError(
-                'payer_percentage and other_percentage are required when expense_type is exact.'
+                'payer_percentage and other_percentage are required when split_type is exact.'
             )
         return data

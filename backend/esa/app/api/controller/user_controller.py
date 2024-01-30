@@ -165,8 +165,6 @@ class FriendsController(viewsets.ViewSet):
                 self.logic.add_friend_expense(
                     expense_dto
                 )
-                # response_serializer = GroupSerializer(response)
-                # return Response(response_serializer.data, status=status.HTTP_201_CREATED)
                 return SuccessfulResponse()
             else:
                 return ErrorResponse(status_code=status.HTTP_400_BAD_REQUEST)

@@ -3,6 +3,7 @@ from _decimal import Decimal
 from uuid import UUID
 
 from django.db.models import QuerySet
+from rest_framework.exceptions import ValidationError, PermissionDenied
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from esa.app.adapters.postgres_adapter import PostgresAdapter
@@ -12,6 +13,7 @@ from esa.app.helpers.metaclasses.singleton import Singleton
 from esa.app.models import UserEntity
 from esa.app.models.dtos.dtos import LoginDTO, LogoutDto, TokenDTO, FriendExpenseDTO
 from esa.app.models.entities.entities import GroupEntity
+from esa.app.models.enums import SplitType
 
 
 class ExpenseSharingAPPLogic(metaclass=Singleton):
@@ -75,8 +77,21 @@ class ExpenseSharingAPPLogic(metaclass=Singleton):
         return self.db_adapter.get_friends(user)
 
     def add_friend_expense(self, expense_dto: FriendExpenseDTO) -> None:
-        pass
+        if expense_dto.other_user ==  expense_dto.paid_by:
+            raise ValidationError("Can't add expense with yourself.")
+        if expense_dto.created_by.id not in [expense_dto.other_user, expense_dto.paid_by]:
+            raise PermissionDenied()
 
+        if expense_dto.split_type == SplitType.EXACT:
+            if expense_dto.amount != (expense_dto.payer_amount + expense_dto.other_amount):
+                raise ValidationError("Input amounts for expenses don't match.")
+            self.db_adapter.add_friend_exact_expense(expense_dto)
+        elif expense_dto.split_type == SplitType.PERCENTAGE:
+            if (expense_dto.payer_percentage + expense_dto.other_percentage) != 100:
+                raise ValidationError("Input percentage for expenses don't match.")
+            self.db_adapter.add_friend_percentage_expense(expense_dto)
+        elif expense_dto.split_type == SplitType.EQUAL:
+            self.db_adapter.add_friend_equal_expense(expense_dto)
 
     def test(self):
         print("WAH")
