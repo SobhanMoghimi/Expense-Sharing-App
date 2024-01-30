@@ -175,6 +175,25 @@ class FriendsController(viewsets.ViewSet):
             ESAUtils.handle_exception(e)
             return ErrorResponse(message=e, status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
 
+    @extend_schema(
+        tags=['Friends'],
+        summary='Get Friends Expense',
+        description="",
+        responses={200: FriendsSerializer},
+    )
+    def get_friends(self, request: Request):
+        try:
+            user = request.user
+            response = self.logic.get_friends(user)
+            response_serializer = FriendsSerializer({'friends': response})
+            return Response(response_serializer.data, status=status.HTTP_200_OK)
+        except ValueError as e:
+            ESAUtils.handle_exception(e)
+            return ErrorResponse(message=str(e), status_code=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            ESAUtils.handle_exception(e)
+            return ErrorResponse(message=e, status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
+
 
 class GroupController(viewsets.ViewSet):
     permission_classes_by_action = {'login': [AllowAny], 'register': [AllowAny]}

@@ -6,7 +6,7 @@ services:
     image: ${IMAGE_NAME}:${IMAGE_VERSION}
     env_file:
       - 'variables.env'
-    command: sh -c "python3 -m mmb.manage migrate && python3 -m esa.manage runserver 0.0.0.0:8200"
+    command: sh -c "python3 -m esa.manage migrate && python3 -m esa.manage runserver 0.0.0.0:8200"
     networks:
       - expense-sharing-app-network
       - postgres-net

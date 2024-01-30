@@ -42,6 +42,11 @@ class FriendSerializer(serializers.Serializer):
 class FriendsSerializer(serializers.Serializer):
     friends = FriendSerializer(many=True)
 
+
+class FriendExpensesSerializer(serializers.Serializer):
+    name = serializers.CharField(required=True)
+    description = serializers.CharField(required=False)
+
 class CreateGroupRequestSerializer(serializers.Serializer):
     name = serializers.CharField(required=True)
     description = serializers.CharField(required=False)
