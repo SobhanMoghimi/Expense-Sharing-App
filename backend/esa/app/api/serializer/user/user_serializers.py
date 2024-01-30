@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from esa.app.helpers.utils.validation_utils import ValidationUtils
 from esa.app.models import UserEntity
-from esa.app.models.entities.entities import GroupEntity
+from esa.app.models.entities.entities import GroupEntity, ExpenseEntity, SplitEntity
 from esa.app.models.enums import SplitType
 
 
@@ -44,6 +44,26 @@ class FriendsSerializer(serializers.Serializer):
 
 class GetFriendExpensesRequestSerializer(serializers.Serializer):
     friend_id = serializers.UUIDField(required=False)
+
+class ExpenseSerializer(serializers.ModelSerializer):
+    paid_by = UserSerializer()
+    created_by = UserSerializer()
+    class Meta:
+        model = ExpenseEntity
+        exclude = ["is_deleted"]
+
+class SplitSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    class Meta:
+        model = SplitEntity
+        exclude = ["is_deleted", "expense"]
+
+class FriendExpenseSerializer(serializers.Serializer):
+    expense = ExpenseSerializer()
+    splits = SplitSerializer(many=True)
+
+class FriendExpensesSerializer(serializers.Serializer):
+    expenses = FriendExpenseSerializer(many=True)
 
 class CreateGroupRequestSerializer(serializers.Serializer):
     name = serializers.CharField(required=True)

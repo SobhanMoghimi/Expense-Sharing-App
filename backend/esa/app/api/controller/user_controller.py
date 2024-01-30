@@ -9,7 +9,7 @@ from rest_framework_simplejwt.exceptions import TokenError
 from esa.app.api.serializer.user.user_serializers import CustomerLoginRequestSerializer, TokenSerializer, \
     RefreshTokenSerializer, UserRegisterRequestSerializer, CreateGroupRequestSerializer, GroupSerializer, \
     GroupListSerializer, AddGroupMemberRequestSerializer, AddFriendRequestSerializer, FriendsSerializer, \
-    AddFriendExpenseRequestSerializer, GetFriendExpensesRequestSerializer
+    AddFriendExpenseRequestSerializer, GetFriendExpensesRequestSerializer, FriendExpensesSerializer
 from esa.app.api.serializer.system.system_serializer import ResponseSerializer
 from esa.app.helpers.common_response import ErrorResponse, SuccessfulResponse
 from esa.app.helpers.exceptions.exceptions import UserWithPasswordNotFoundException
@@ -180,7 +180,7 @@ class FriendsController(viewsets.ViewSet):
         tags=['Friends'],
         summary='Get Friends Expense',
         description="",
-        responses={200: FriendsSerializer},
+        responses={200: FriendExpensesSerializer},
     )
     def get_friends_expenses(self, request: Request):
         serializer = GetFriendExpensesRequestSerializer(data=request.data)
@@ -192,7 +192,8 @@ class FriendsController(viewsets.ViewSet):
                     user,
                     friend_id
                 )
-                return SuccessfulResponse()
+                serialized_response = FriendExpensesSerializer({'expenses':output})
+                return Response(serialized_response.data, status=status.HTTP_200_OK)
             else:
                 return ErrorResponse(status_code=status.HTTP_400_BAD_REQUEST)
         except ValueError as e:

@@ -3,7 +3,7 @@ import math
 from _decimal import Decimal
 from uuid import UUID
 
-from django.db.models import QuerySet
+from django.db.models import QuerySet, Q
 
 from esa.app.helpers.exceptions.exceptions import AlreadyExistsException
 from esa.app.models import UserEntity
@@ -127,6 +127,7 @@ class PostgresAdapter:
             amount=expense_dto.amount,
             created_by=expense_dto.created_by,
             paid_by=expense_dto.paid_by,
+            other_user=expense_dto.other_user,
         )
 
     @staticmethod
@@ -138,3 +139,14 @@ class PostgresAdapter:
         friend_friendship = FriendshipEntity.objects.get(user=friend_split.user, friend_user=payer_split.user)
         friend_friendship.money_owed = friend_friendship.money_owed + friend_split.share
         friend_friendship.save()
+
+    @staticmethod
+    def get_friends_expenses(
+            user: UserEntity,
+            friend_id: UUID
+    ) -> list[dict[str:ExpenseEntity, str:list[SplitEntity]]]:
+        user_expense = ExpenseEntity.objects.filter(Q(paid_by=user) | Q(other_user=user))
+        return [
+            {'expense': expense, 'splits': SplitEntity.objects.filter(expense=expense)}
+            for expense in user_expense
+        ]

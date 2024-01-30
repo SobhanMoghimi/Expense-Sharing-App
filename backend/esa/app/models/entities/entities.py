@@ -86,6 +86,7 @@ class ExpenseEntity(CommonEntity):
     description = models.CharField(max_length=1024)
     group = models.ForeignKey(GroupEntity, on_delete=models.DO_NOTHING, null=True, db_constraint=False)
     paid_by = models.ForeignKey(UserEntity, on_delete=models.CASCADE, related_name="paid_by")
+    other_user = models.ForeignKey(UserEntity, on_delete=models.CASCADE, related_name="expense_other_user")
     # splits = models.ManyToOneRel()
 
 class SplitEntity(CommonEntity):
