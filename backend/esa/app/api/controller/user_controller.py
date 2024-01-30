@@ -105,7 +105,7 @@ class FriendsController(viewsets.ViewSet):
 
     @extend_schema(
         request=AddFriendRequestSerializer,
-        tags=['User'],
+        tags=['Friends'],
         summary='Add Friend',
         description="",
         responses={200: ResponseSerializer},
@@ -130,7 +130,7 @@ class FriendsController(viewsets.ViewSet):
             return ErrorResponse(message=e, status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
 
     @extend_schema(
-        tags=['User'],
+        tags=['Friends'],
         summary='Get Friends',
         description="",
         responses={200: FriendsSerializer},
@@ -150,7 +150,7 @@ class FriendsController(viewsets.ViewSet):
 
     @extend_schema(
         request=AddFriendExpenseRequestSerializer,
-        tags=['User'],
+        tags=['Friends'],
         summary='Add Friend',
         description="",
         responses={200: ResponseSerializer},

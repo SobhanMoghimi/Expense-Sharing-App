@@ -4,5 +4,5 @@ from esa.app.api.controller.user_controller import FriendsController
 
 urlpatterns = [
     path('', FriendsController.as_view({'post': 'add_friend', "get": 'get_friends'})),
-    path('/expense', FriendsController.as_view({'post': 'add_expense', "get": 'get_friend_expenses'})),
+    path('expense/', FriendsController.as_view({'post': 'add_expense'})),
 ]
