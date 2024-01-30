@@ -49,7 +49,7 @@ class UserEntity(AbstractBaseUser, PermissionsMixin, DeletableEntity):
     last_name = models.CharField(max_length=128)
     phone_number = models.CharField(max_length=32)
 
-    friends = models.ManyToManyField("self", blank=True, symmetrical=False)
+    # friends = models.ManyToManyField("self", blank=True, symmetrical=False)
     is_staff = models.BooleanField(default=False)
 
     objects = UserManager()
@@ -63,6 +63,14 @@ class UserEntity(AbstractBaseUser, PermissionsMixin, DeletableEntity):
 
     def __str__(self):
         return self.email
+
+class FriendshipEntity(models.Model):
+    user = models.ForeignKey(UserEntity, on_delete = models.CASCADE, related_name='user')
+    friend_user = models.ForeignKey(UserEntity, on_delete = models.CASCADE, related_name='friend_user')
+    money_owed = models.IntegerField(default=0)
+
+    def __str__(self) -> str:
+        return self.friend_user.name
 
 
 class GroupEntity(CommonEntity):

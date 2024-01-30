@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from esa.app.helpers.utils.validation_utils import ValidationUtils
+from esa.app.models import UserEntity
 from esa.app.models.entities.entities import GroupEntity
 
 
@@ -25,8 +26,20 @@ class TokenSerializer(serializers.Serializer):
 class RefreshTokenSerializer(serializers.Serializer):
     refresh_token = serializers.CharField(required=True)
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserEntity
+        include = ["email", "first_name", "last_name", "id"]
+
 class AddFriendRequestSerializer(serializers.Serializer):
     phone_number_or_email = serializers.CharField(required=True)
+
+class FriendSerializer(serializers.Serializer):
+    friend = UserSerializer()
+    money_owed = serializers.IntegerField()
+
+class FriendsSerializer(serializers.Serializer):
+    friends_with_owed = FriendSerializer(many=True)
 
 class CreateGroupRequestSerializer(serializers.Serializer):
     name = serializers.CharField(required=True)

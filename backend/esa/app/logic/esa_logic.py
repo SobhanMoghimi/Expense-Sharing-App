@@ -71,6 +71,9 @@ class ExpenseSharingAPPLogic(metaclass=Singleton):
         else:
             raise UserNotFoundException()
 
+    def get_friends(self, user: UserEntity) -> list[(UserEntity, int)]:
+        return self.db_adapter.get_friends(user)
+
     def test(self):
         print("WAH")
         token_price = self.bsc_adapter.get_token_price()

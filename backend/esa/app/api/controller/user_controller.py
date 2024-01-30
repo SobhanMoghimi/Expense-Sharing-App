@@ -100,7 +100,7 @@ class UserController(viewsets.ViewSet):
     @extend_schema(
         request=AddFriendRequestSerializer,
         tags=['User'],
-        summary='Add Friend',
+        summary='Add FriendshipEntity',
         description="",
         responses={200: ResponseSerializer},
     )
@@ -116,6 +116,27 @@ class UserController(viewsets.ViewSet):
                 return SuccessfulResponse()
             else:
                 return ErrorResponse(status_code=status.HTTP_400_BAD_REQUEST)
+        except ValueError as e:
+            ESAUtils.handle_exception(e)
+            return ErrorResponse(message=str(e), status_code=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            ESAUtils.handle_exception(e)
+            return ErrorResponse(message=e, status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+
+    @extend_schema(
+        tags=['User'],
+        summary='Get Friends',
+        description="",
+        responses={200: ResponseSerializer},
+    )
+    def get_friends(self, request: Request):
+        try:
+            user = request.user
+            response = self.logic.get_friends(user)
+            response_serializer = GroupSerializer(response)
+            return Response(response_serializer.data, status=status.HTTP_200_OK)
+            # return SuccessfulResponse()
         except ValueError as e:
             ESAUtils.handle_exception(e)
             return ErrorResponse(message=str(e), status_code=status.HTTP_400_BAD_REQUEST)

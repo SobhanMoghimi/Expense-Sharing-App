@@ -6,7 +6,7 @@ from django.db.models import QuerySet
 
 from esa.app.helpers.exceptions.exceptions import AlreadyExistsException
 from esa.app.models import UserEntity
-from esa.app.models.entities.entities import GroupEntity
+from esa.app.models.entities.entities import GroupEntity, FriendshipEntity
 
 
 class PostgresAdapter:
@@ -53,8 +53,15 @@ class PostgresAdapter:
     def get_user_groups(user: UserEntity) -> QuerySet[GroupEntity]:
         return GroupEntity.objects.filter(members=user)
 
-    def add_friend(self, user: UserEntity, friend_user: UserEntity):
-        if friend_user in user.friends.all():
-            AlreadyExistsException("User already exists.")
-        user.friends.add(friend_user)
-        user.save()
+    def add_friend(self, user: UserEntity, friend_user: UserEntity) -> None:
+        if FriendshipEntity.objects.filter(user=user, friend_user=friend_user):
+            AlreadyExistsException("User already exists in your friend list.")
+        if user.id == friend_user.id:
+            Exception("Can't add yourself to your friends.")
+        FriendshipEntity.objects.create(user=user, friend_user=friend_user)
+
+
+    @staticmethod
+    def get_friends(user: UserEntity) -> list[(UserEntity, int)]:
+        friendships = FriendshipEntity.objects.filter(user=user)
+        return [(friendship.friend_user, friendship.money_owed) for friendship in friendships]
