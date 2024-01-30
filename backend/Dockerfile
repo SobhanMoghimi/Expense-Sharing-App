@@ -7,16 +7,14 @@ RUN pip3 install --upgrade pip
 RUN mkdir /app
 WORKDIR /app
 
-
-
 COPY requirements.txt .
 
 RUN pip3 install --no-cache-dir -r ./requirements.txt
 
 COPY esa ./esa
-#COPY deployment /app/.
 
 EXPOSE 8100
+EXPOSE 8200
 
 # use this command to debug
 #ENTRYPOINT ["tail", "-f", "/dev/null"]
