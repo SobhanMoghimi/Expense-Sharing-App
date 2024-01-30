@@ -15,7 +15,7 @@ spec:
         app: django
     spec:
       containers:
-        - image: dockerhub_username/app_repo_name:latest
+        - image: ehsanrahgozar/expence-sharing:latest
           name: expense
           ports:
             - containerPort: 8000
