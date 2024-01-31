@@ -9,12 +9,13 @@ from rest_framework_simplejwt.exceptions import TokenError
 from esa.app.api.serializer.user.user_serializers import CustomerLoginRequestSerializer, TokenSerializer, \
     RefreshTokenSerializer, UserRegisterRequestSerializer, CreateGroupRequestSerializer, GroupSerializer, \
     GroupListSerializer, AddGroupMemberRequestSerializer, AddFriendRequestSerializer, FriendsSerializer, \
-    AddFriendExpenseRequestSerializer, GetFriendExpensesRequestSerializer, FriendExpensesSerializer
+    AddFriendExpenseRequestSerializer, GetFriendExpensesRequestSerializer, FriendExpensesSerializer, UserSerializer
 from esa.app.api.serializer.system.system_serializer import ResponseSerializer
 from esa.app.helpers.common_response import ErrorResponse, SuccessfulResponse
 from esa.app.helpers.exceptions.exceptions import UserWithPasswordNotFoundException
 from esa.app.helpers.utils.esa_utils import ESAUtils
 from esa.app.logic.esa_logic import ExpenseSharingAPPLogic
+from esa.app.models import UserEntity
 from esa.app.models.dtos.dtos import TokenDTO, LoginDTO, LogoutDto, FriendExpenseDTO
 
 
@@ -97,6 +98,24 @@ class UserController(viewsets.ViewSet):
         except Exception as e:
             ESAUtils.handle_exception(e)
             return ErrorResponse(message=e, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @extend_schema(
+        tags=['Authentication'],
+        summary='Get user info',
+        description="",
+        responses={200: FriendsSerializer},
+    )
+    def get_user_info(self, request: Request):
+        try:
+            user = request.user
+            response_serializer = UserSerializer(user)
+            return Response(response_serializer.data, status=status.HTTP_200_OK)
+        except ValueError as e:
+            ESAUtils.handle_exception(e)
+            return ErrorResponse(message=str(e), status_code=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            ESAUtils.handle_exception(e)
+            return ErrorResponse(message=e, status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
 
 class FriendsController(viewsets.ViewSet):
     def __init__(self):

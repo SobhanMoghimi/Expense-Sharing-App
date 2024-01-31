@@ -30,7 +30,7 @@ class RefreshTokenSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserEntity
-        fields = ["email", "first_name", "last_name", "id"]
+        fields = ["email", "first_name", "last_name", "id", "phone_number"]
 
 class AddFriendRequestSerializer(serializers.Serializer):
     phone_number_or_email = serializers.CharField(required=True)
@@ -64,6 +64,8 @@ class FriendExpenseSerializer(serializers.Serializer):
 
 class FriendExpensesSerializer(serializers.Serializer):
     expenses = FriendExpenseSerializer(many=True)
+
+# class UserSerializer(serializers)
 
 class CreateGroupRequestSerializer(serializers.Serializer):
     name = serializers.CharField(required=True)
