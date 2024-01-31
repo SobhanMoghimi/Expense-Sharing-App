@@ -27,7 +27,6 @@ volumes:
 
 networks:
   expense-sharing-app-network:
-    external: true
   redis-net:
     external: true
     name: redis-net
