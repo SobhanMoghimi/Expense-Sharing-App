@@ -3,7 +3,7 @@ services:
 
   expense-sharing-app:
     container_name: expense-sharing-app
-    image: ${IMAGE_NAME}:${IMAGE_VERSION}
+    build: ../../.
     env_file:
       - 'variables.env'
     command: python3 -m esa.manage runserver 0.0.0.0:8100
